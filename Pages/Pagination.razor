@@ -1,0 +1,114 @@
+﻿<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" @onclick="@(() => OnClick.InvokeAsync(1))" aria-label="First" title="first">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" @onclick="@(() => OnClick.InvokeAsync(CurrentPage - 1))" aria-label="Previous" title="previous">
+                <span aria-hidden="true">&lsaquo;</span>
+            </a>
+        </li>
+
+        @if (CurrentPage <= (Radius + 1))
+        {
+            if (TotalPages <= ((2 * Radius) + 1))
+            {
+                for (int i = 1; i <= TotalPages; i++)
+                {
+                    var pageNumber = i;
+                    <li class="page-item @(CurrentPage == pageNumber ? "active" : "")" @onclick="@(() => OnClick.InvokeAsync(pageNumber))">
+                        <span class="page-link">@pageNumber</span>
+                    </li>
+                }
+            }
+            else
+            {
+                for (int i = 1; i <= ((2 * Radius) + 1); i++)
+                {
+                    var pageNumber = i;
+                    <li class="page-item @(CurrentPage == pageNumber ? "active" : "")" @onclick="@(() => OnClick.InvokeAsync(pageNumber))">
+                        <span class="page-link">@pageNumber</span>
+                    </li>
+                }
+            }
+        }
+        else if (CurrentPage >= (TotalPages - (Radius + 1)))
+        {
+            if (CurrentPage + Radius <= TotalPages)
+            {
+                for (int i = CurrentPage - Radius; i <= CurrentPage + Radius; i++)
+                {
+                    var pageNumber = i;
+
+                    <li class="page-item @(CurrentPage == pageNumber ? "active" : "")" @onclick="@(() => OnClick.InvokeAsync(pageNumber))">
+                        <span class="page-link">@pageNumber</span>
+                    </li>
+                }
+            }
+            else
+            {
+                for (int i = TotalPages - ((2 * Radius)); i <= TotalPages; i++)
+                {
+                    var pageNumber = i;
+
+                    <li class="page-item @(CurrentPage == pageNumber ? "active" : "")" @onclick="@(() => OnClick.InvokeAsync(pageNumber))">
+                        <span class="page-link">@pageNumber</span>
+                    </li>
+                }
+            }
+        }
+        else
+        {
+            for (int i = (CurrentPage - Radius); i < CurrentPage; i++)
+            {
+                var pageNumber = i;
+
+                <li class="page-item @(CurrentPage == pageNumber ? "active" : "")" @onclick="@(() => OnClick.InvokeAsync(pageNumber))">
+                    <span class="page-link">@pageNumber</span>
+                </li>
+            }
+
+            <li class="page-item active">
+                <span class="page-link">@CurrentPage</span>
+            </li>
+
+            for (int i = CurrentPage + 1; i <= (CurrentPage + Radius); i++)
+            {
+                var pageNumber = i;
+
+                <li class="page-item @(CurrentPage == pageNumber ? "active" : "")" @onclick="@(() => OnClick.InvokeAsync(pageNumber))">
+                    <span class="page-link">@pageNumber</span>
+                </li>
+            }
+        }
+
+        <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
+            <a class="page-link" @onclick="@(() => OnClick.InvokeAsync(CurrentPage + 1))" aria-label="Next" title="next">
+                <span aria-hidden="true">&rsaquo;</span>
+            </a>
+        </li>
+        <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
+            <a class="page-link" @onclick="@(() => OnClick.InvokeAsync(TotalPages))" aria-label="Last" title="last">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+@code{
+    [Parameter] public int CurrentPage { get; set; }
+    [Parameter] public int NumberOfItems { get; set; }
+    [Parameter] public int PageSize { get; set; }
+    [Parameter] public int Radius { get; set; }
+
+    [Parameter] public EventCallback<int> OnClick { get; set; }
+
+    private int TotalPages;
+
+    protected override void OnParametersSet()
+    {
+        TotalPages = (int)Math.Ceiling((decimal)NumberOfItems / PageSize);
+    }
+}
